@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<parentworkflow name="abhi" version="1" user="abhi">
+
+    <workflow name="pay" version="1" user="himasnhu">
+        <node id="1" type="start" name="Get party1 information" time="50" >
+            
+           <!--  <input type="hidden" name="amount1" preinitialize="true">
+                <value val="100"/>
+            </input>
+                <input type="persistent" name="No_of_tries" editable="true">
+                <value fval="1,try;"> </value>
+                <function>double</function>
+            </input> -->
+            <input type="text" name="amount">
+                <value val=""></value>
+                <condition type="validation">
+                    <check property="numeric" val="True" operator="eq"/>
+                </condition>
+            </input>
+          
+               <input type="phidden" name="try" preinitialize="true" editable="true">
+                <value val="0"/>
+                <function>increment</function>
+            </input>
+            <innodes id="0"/>
+            <outnode id="2"/>
+            <!-- <input type="hidden" name="try" preinitialize="true">
+                <value val="1"/>
+            </input>-->
+        </node>
+        <node id="2" name="intermediate" type="intermediate" substitute="payment">
+          
+            <input type="text" name="amount">
+                 <value fval="1,amount:1,try:100;calculate"/>
+            </input>
+            
+            <innodes id="1"/>
+             <outnode id="3"/>
+        </node>
+        <node id="3" type="end" name="done" time="2" >
+            <input type="text" name="success" editable="true">
+                <value fval="2,success;none"> </value>
+            </input>
+             <condition type="fallback"> <!-- greater than -->
+                <check property="value" val="0" operator="eq" inputname="success"/>
+                <outnode id="1" />
+            </condition>
+            <innodes id="2"/>
+        </node>
+    </workflow>
+
+
+</parentworkflow>
+

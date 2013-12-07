@@ -2,7 +2,7 @@
 // WARNING: This class is AUTO-GENERATED. Modify at your own risk.
 //
 // Debug information:
-// Generated date: Sun Nov 10 18:45:33 IST 2013
+// Generated date: Thu Nov 21 13:11:01 IST 2013
 // For connector: org.apache.sqoop.manager.MySQLManager
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.scoopEnhancements.CipherUtils;
 public class login extends SqoopRecord  implements DBWritable, Writable {
   private final int PROTOCOL_VERSION = 3;
   public int getClassFormatVersion() { return PROTOCOL_VERSION; }
@@ -60,15 +61,15 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
     this.username = username;
     return this;
   }
-  private String email;
-  public String get_email() {
-    return email;
+  private String password;
+  public String get_password() {
+    return password;
   }
-  public void set_email(String email) {
-    this.email = email;
+  public void set_password(String password) {
+    this.password = password;
   }
-  public login with_email(String email) {
-    this.email = email;
+  public login with_password(String password) {
+    this.password = password;
     return this;
   }
   public boolean equals(Object o) {
@@ -82,14 +83,14 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
     boolean equal = true;
     equal = equal && (this.id == null ? that.id == null : this.id.equals(that.id));
     equal = equal && (this.username == null ? that.username == null : this.username.equals(that.username));
-    equal = equal && (this.email == null ? that.email == null : this.email.equals(that.email));
+    equal = equal && (this.password == null ? that.password == null : this.password.equals(that.password));
     return equal;
   }
   public void readFields(ResultSet __dbResults) throws SQLException {
     this.__cur_result_set = __dbResults;
     this.id = JdbcWritableBridge.readInteger(1, __dbResults);
     this.username = JdbcWritableBridge.readString(2, __dbResults);
-    this.email = JdbcWritableBridge.readString(3, __dbResults);
+    this.password = JdbcWritableBridge.readString(3, __dbResults);
   }
   public void loadLargeObjects(LargeObjectLoader __loader)
       throws SQLException, IOException, InterruptedException {
@@ -99,9 +100,11 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
   }
 
   public int write(PreparedStatement __dbStmt, int __off) throws SQLException {
+username=CipherUtils.decrypt(username,"1234567890123456").trim();
+password=CipherUtils.decrypt(password,"1234567890123456").trim();
     JdbcWritableBridge.writeInteger(id, 1 + __off, 4, __dbStmt);
     JdbcWritableBridge.writeString(username, 2 + __off, 12, __dbStmt);
-    JdbcWritableBridge.writeString(email, 3 + __off, 12, __dbStmt);
+    JdbcWritableBridge.writeString(password, 3 + __off, 12, __dbStmt);
     return 3;
   }
   public void readFields(DataInput __dataIn) throws IOException {
@@ -116,9 +119,9 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
     this.username = Text.readString(__dataIn);
     }
     if (__dataIn.readBoolean()) { 
-        this.email = null;
+        this.password = null;
     } else {
-    this.email = Text.readString(__dataIn);
+    this.password = Text.readString(__dataIn);
     }
   }
   public void write(DataOutput __dataOut) throws IOException {
@@ -134,11 +137,11 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
         __dataOut.writeBoolean(false);
     Text.writeString(__dataOut, username);
     }
-    if (null == this.email) { 
+    if (null == this.password) { 
         __dataOut.writeBoolean(true);
     } else {
         __dataOut.writeBoolean(false);
-    Text.writeString(__dataOut, email);
+    Text.writeString(__dataOut, password);
     }
   }
   private final DelimiterSet __outputDelimiters = new DelimiterSet((char) 44, (char) 10, (char) 0, (char) 0, false);
@@ -158,7 +161,7 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
     __sb.append(fieldDelim);
     __sb.append(FieldFormatter.escapeAndEnclose(username==null?"null":username, delimiters));
     __sb.append(fieldDelim);
-    __sb.append(FieldFormatter.escapeAndEnclose(email==null?"null":email, delimiters));
+    __sb.append(FieldFormatter.escapeAndEnclose(password==null?"null":password, delimiters));
     if (useRecordDelim) {
       __sb.append(delimiters.getLinesTerminatedBy());
     }
@@ -228,8 +231,8 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
     }
 
     __cur_str = __it.next();
-    if (__cur_str.equals("null")) { this.email = null; } else {
-      this.email = __cur_str;
+    if (__cur_str.equals("null")) { this.password = null; } else {
+      this.password = __cur_str;
     }
 
   }
@@ -243,7 +246,7 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
     Map<String, Object> __sqoop$field_map = new TreeMap<String, Object>();
     __sqoop$field_map.put("id", this.id);
     __sqoop$field_map.put("username", this.username);
-    __sqoop$field_map.put("email", this.email);
+    __sqoop$field_map.put("password", this.password);
     return __sqoop$field_map;
   }
 
@@ -254,8 +257,8 @@ public class login extends SqoopRecord  implements DBWritable, Writable {
     else    if ("username".equals(__fieldName)) {
       this.username = (String) __fieldVal;
     }
-    else    if ("email".equals(__fieldName)) {
-      this.email = (String) __fieldVal;
+    else    if ("password".equals(__fieldName)) {
+      this.password = (String) __fieldVal;
     }
     else {
       throw new RuntimeException("No such field: " + __fieldName);

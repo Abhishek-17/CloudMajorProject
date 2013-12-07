@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<parentworkflow name="abhi" version="1" user="abhi">
+
+    <workflow name="abhi" version="1" user="abhishek">
+        <node id="1" type="start" name="Task1" time="50" >
+        
+            <input type="text" name="text1" editable="true">
+                <value val="abhishek"> </value>
+            </input>
+            <input type="checkbox" name="Gender">
+                <value val="male">male</value>
+                <value val="female">female</value>
+            </input>
+         
+            <outnode id="3"/>
+            <innodes id="0"/>
+        </node>
+         
+       <node id="3" type="ParallelSplit" name="Send_final_result" cost="100">
+            <input id="1" type="text" name="score">
+                <value val="Default"></value>
+            </input>
+            <condition type="branch"> <!-- greater than -->
+                <check property="value" val="5" operator="gt" inputname="score"/>
+                <outnode id="2" />
+            </condition>
+            <condition type="branch">
+                <check property="value" val="5" operator="gt" inputname="score"/>
+                <outnode id="2" />
+            </condition>
+            <condition type="fallback">
+                <check property="value" val="false" operator="eq" inputname="error"/>
+                <outnode id="1" />
+            </condition>
+             <input type="hidden" name='error'> 
+                <value fval="1;falsefunc"> </value> <!-- function name,nodeid,input name , function parameter -->
+            </input>
+            <input type="text" name='megusta'> 
+                <value fval="1,text1:abhi:1,Gender;func1:func2"> </value> <!-- function name,nodeid,input name , function parameter -->
+            </input>
+            <innodes id="1"/>
+            
+            <function>
+              
+                <data type="node">1,text1</data>
+                <data type="node">1,Gender</data>
+                <data>abhishek</data>
+                <functionname>display</functionname>
+                <functionname>display2</functionname>
+                
+             
+            </function>
+                <outnode id="2" />
+        </node>
+        <node id="2" type="end" name="Task2">
+           
+            <innodes id="3"/>
+        </node>
+    </workflow>
+
+</parentworkflow>
+

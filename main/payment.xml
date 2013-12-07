@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<parentworkflow name="abhi" version="1" user="abhi">
+
+    <workflow name="payment" version="1" user="himasnhu">
+        <node id="1" type="start" name="Get party1 information" time="50" >
+            <mustbedeactive>
+                <id>0</id>
+            </mustbedeactive>
+            <!--  <input type="hidden" name="amount1" preinitialize="true">
+                <value val="100"/>
+            </input>
+               <input type="persistent" name="No_of_tries" editable="true">
+                <value fval="1,try;"> </value>
+                <function>double</function>
+            </input> 
+            <input type="persistent" name="amount">
+                <value fval="1,amount;none"></value>
+            </input>-->
+            <function execute="before">
+                <data type="node">1,amount</data>
+                <data type="node">1,try</data>
+                 <data type="node">100</data>
+                <functionname>calculate</functionname>
+            </function>
+            <input type="text" name="bank_name">
+                <value val=""> </value>
+            </input>
+            <input type="text" name="branch_name">
+                <value val=""> </value>
+            </input>
+            <input type="text" name="account_no" editable="true">
+                <value val=""></value>
+                <condition type="validation">
+                    <check property="alphanumeric" val="True" operator="eq"/>
+                </condition>
+            </input>
+            <condition type="branch">
+                <check property="ifchanged" val="account_no" operator="eq" inputname="account_no"/>
+                <outnode id="8"/>
+            </condition> 
+            <input type="text" name="mobile">
+                <value val=""> </value>
+            </input>
+            <innodes id="0"/>
+            <outnode id="2"/>
+            <!-- <input type="hidden" name="try" preinitialize="true">
+                <value val="1"/>
+            </input>-->
+        </node>
+        <node id="2" type="auto" name="bank1_debit_from_party1" time="20" >
+            <function>
+                <data type="node">1,amount</data>
+                <data type="node">1,account_no</data>
+                <functionname>debit</functionname>
+                <condition type="branch">
+                    <check property="value" val="1" operator="eq"/>
+                    <outnode id="3"/>
+                </condition>
+                <condition type="fallback">
+                    <check property="value" val="0" operator="eq"/>
+                    <outnode id="1"/>
+                </condition>
+            </function>
+            <innodes id="1"/>
+        </node>
+        <node id="3" type="intermediate" name="Get party2 information" time="50" >
+            <mustbedeactive>
+                <id>0</id>
+            </mustbedeactive>
+            <!-- <function execute="before">
+                <data type="node">1,amount</data>
+                <functionname>display</functionname>
+            </function>-->
+            <input type="text" name="bank_name">
+                <value val=""> </value>
+            </input>
+            <input type="text" name="branch_name">
+                <value val=""> </value>
+            </input>
+            <input type="text" name="account_no">
+                <value val=""></value>
+                <condition type="validation">
+                    <check property="alphanumeric" val="True" operator="eq"/>
+                </condition>
+            </input>
+            <innodes id="2"/>
+            <outnode id="4"/>
+            <!-- <input type="hidden" name="try" preinitialize="true">
+                <value val="1"/>
+            </input>-->
+        </node>
+        <node id="4" type="auto" name="bank1_to_bank2" time="2" >
+            <function>
+                <data type="node">3,bank_name</data>
+                <data type="node">3,branch_name</data>
+                <data type="node">3,account_no</data>
+                <data type="node">1,amount</data>
+                <functionname>clearance</functionname>
+                <condition type="branch">
+                    <check property="value" val="1" operator="eq"/>
+                    <outnode id="5"/>
+                </condition>
+                <condition type="fallback">
+                    <check property="value" val="0" operator="eq"/>
+                    <outnode id="3"/>
+                </condition>
+            </function>
+            <innodes id="3"/>
+        </node>
+        <node id="5" type="auto" name="bank2_credits_party2" time="2" >
+            <function>
+             
+                <data type="node">3,account_no</data>
+                <data type="node">1,amount</data>
+                <functionname>credit</functionname>
+                <condition type="branch">
+                    <check property="value" val="1" operator="eq"/>
+                    <outnode id="6"/>
+                </condition>
+                <condition type="fallback">
+                    <check property="value" val="0" operator="eq"/>
+                    <outnode id="5"/>
+                </condition>
+            </function>
+            <innodes id="4"/>
+        </node>
+        <node id="6" type="auto" name="bank2_ACK_bank1" time="2" >
+            <function execute="before">
+             
+                <data type="node">1,amount</data>
+                <data>Party1</data>
+                <data type="node">1,account_no</data>
+                <data>Party2</data>
+                <data type="node">3,account_no</data>
+                <data>success</data>
+                <functionname>display2</functionname>
+               
+            </function>
+            <function>
+             
+                <data type="node">1,amount</data>
+                <data>Party1</data>
+                <data type="node">1,account_no</data>
+                <data>Party2</data>
+                <data type="node">3,account_no</data>
+                <data>success</data>
+                <functionname>display2</functionname>
+                <condition type="branch">
+                    <check property="value" val="1" operator="eq"/>
+                    <outnode id="7"/>
+                </condition>
+                <condition type="fallback">
+                    <check property="value" val="0" operator="eq"/>
+                    <outnode id="6"/>
+                </condition>
+            </function>
+            <innodes id="5"/>
+        </node>
+        <node id="7" type="auto" name="bank1_informs_party1" time="2" >
+            <input type="text" name="mobile">
+                <value val=""> </value>
+            </input>
+            <function execute="before">
+             
+                <data type="node">1,amount</data>
+                <data>Party1</data>
+                <data type="node">1,account_no</data>
+                <data>Party2</data>
+                <data type="node">3,account_no</data>
+                <data>success</data>
+                <functionname>send</functionname>
+            
+            </function>
+            <function>
+             
+                <data type="node">1,amount</data>
+                <data>Party1</data>
+                <data type="node">1,account_no</data>
+                <data>Party2</data>
+                <data type="node">3,account_no</data>
+                <data>success</data>
+                <functionname>send</functionname>
+                <condition type="branch">
+                    <check property="value" val="1" operator="eq"/>
+                    <outnode id="8"/>
+                </condition>
+                <condition type="fallback">
+                    <check property="value" val="0" operator="eq"/>
+                    <outnode id="7"/>
+                </condition>
+            </function>
+            <innodes id="6"/>
+        </node>
+        <node id="8" type="end" name="done" time="2" >
+            <input type="text" name="success">
+                <value fval="1;flasefunc"> </value>
+            </input> 
+            <innodes id="7;1"/>
+        </node>
+    </workflow>
+
+
+</parentworkflow>
+

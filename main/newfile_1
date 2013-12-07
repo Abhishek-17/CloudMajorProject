@@ -1,0 +1,173 @@
+CREATE TABLE `parent_workflow` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(80) NOT NULL ,
+  `workflow_desc` text,
+  `start_date` date default NULL,
+  `end_date` date default NULL,
+  `manager_id` varchar(16) default NULL,
+ PRIMARY KEY  (`id`)
+)ENGINE=MyISAM;
+CREATE TABLE `workflow` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` smallint(5),
+  `name` varchar(80) NOT NULL ,
+  `workflow_desc` text,
+  `start_date` date default NULL,
+  `end_date` date default NULL,
+  `manager_id` int default 0,
+    `cost` int default 0,
+    `mapping` text,
+ FOREIGN KEY (parent_id) REFERENCES parent_workflow(id),
+ FOREIGN KEY (manager_id) REFERENCES login(id),
+ PRIMARY KEY  (`id`)
+)ENGINE=MyISAM;
+CREATE TABLE `transition` (
+  `workflow_id` smallint(5) unsigned NOT NULL,
+  `id` int NOT NULL default '0',
+  `type` varchar(80) NOT NULL default '',
+   `innodes` text default '',
+    `done_innodes` text default '',
+  `outnodes` text default '',
+    `functions` text,
+   `branch` text,
+    `fallback` text,
+    `path` text,
+    `activated` int default '0',
+    `start_time` int unsigned default 0,
+   `time_limit` int unsigned default 0,
+    `doer` int NOT NULL default '0',
+    `cost` int default 0,
+    `fval` text,
+    `mustbedeactive` text,
+    PRIMARY KEY  (`workflow_id`,`id`),
+    FOREIGN KEY (workflow_id) REFERENCES workflow(id)
+)ENGINE=MyISAM;
+
+CREATE TABLE `inputs` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `workflow_id` smallint(5) unsigned NOT NULL,
+    `transition_id` int NOT NULL,
+    `type` varchar(80) NOT NULL default '',
+    `name` varchar(80) NOT NULL default '',
+    `val` text,
+    `chosen_val` text,
+    `validation` text,
+    `editable` varchar(80) default 'false',
+    `functions` text,
+    PRIMARY KEY  (`id`),
+    FOREIGN KEY (transition_id) REFERENCES transition(id),
+    FOREIGN KEY (workflow_id) REFERENCES workflow(id)
+    
+)ENGINE=MyISAM;
+ CREATE TABLE `function_workflow` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` smallint(5),
+  `name` varchar(80) NOT NULL ,
+  `workflow_desc` text,
+  `start_date` date default NULL,
+  `end_date` date default NULL,
+  `manager_id` int default 0,
+    `cost` int default 0,
+  `mapping` text,
+ FOREIGN KEY (parent_id) REFERENCES parent_workflow(id),
+ FOREIGN KEY (manager_id) REFERENCES login(id),
+ PRIMARY KEY  (`id`)
+)ENGINE=MyISAM;
+CREATE TABLE `function_transition` (
+  `workflow_id` smallint(5) unsigned NOT NULL,
+  `id` int NOT NULL default '0',
+  `type` varchar(80) NOT NULL default '',
+   `innodes` text default '',
+    `done_innodes` text default '',
+  `outnodes` text default '',
+    `functions` text,
+   `branch` text,
+    `fallback` text,
+    `path` text,
+    `activated` int default '0',
+    `start_time` int unsigned default 0,
+   `time_limit` int unsigned default 0,
+    `doer` int NOT NULL default '0',
+    `cost` int default 0,
+    `fval` text,
+`mustbedeactive` text,
+    PRIMARY KEY  (`workflow_id`,`id`),
+    FOREIGN KEY (workflow_id) REFERENCES function_workflow(id)
+)ENGINE=MyISAM;
+
+CREATE TABLE `function_inputs` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `workflow_id` smallint(5) unsigned NOT NULL,
+    `transition_id` int NOT NULL,
+    `type` varchar(80) NOT NULL default '',
+    `name` varchar(80) NOT NULL default '',
+    `val` text,
+    `chosen_val` text,
+    `validation` text,
+    `editable` varchar(80) default 'false',
+`functions` text,
+    PRIMARY KEY  (`id`),
+    FOREIGN KEY (transition_id) REFERENCES function_transition(id),
+    FOREIGN KEY (workflow_id) REFERENCES function_workflow(id)
+    
+)ENGINE=MyISAM;
+CREATE TABLE `login` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `username` varchar(30) NOT NULL,
+    `password` varchar(30) NOT NULL,
+    `status` varchar(30) default '',
+    `email` varchar(30) NOT NULL,
+    `org_id` int default 0,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (org_id) REFERENCES organization(id)
+
+)ENGINE=MyISAM;
+
+INSERT INTO login(status,username,password,email,org_id) values('root','root','root','root',-1);
+
+CREATE TABLE `organization` (
+    `id` int NOT NULL AUTO_INCREMENT ,
+    `org_name` varchar(30) NOT NULL ,
+    `org_address` varchar(30) NOT NULL ,
+    `org_payment` int NOT NULL ,
+    PRIMARY KEY (`id`)
+)ENGINE=MyISAM;
+
+CREATE TABLE `contract` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `con_name` varchar(30) NOT NULL ,
+    `con_manager_id` int NOT NULL ,
+    `con_deadline` int NOT NULL ,
+    `org_id` text NOT NULL ,
+    PRIMARY KEY (`id`)
+)ENGINE=MyISAM;
+
+    FOREIGN KEY (transition_id) REFERENCES transition(id),
+
+
+foreach ($node->input as $input){
+        
+        $record=array($wid,$node['id'],$input['type'],$input['name']);
+        $vars=array();
+        switch($input['type']){
+            case 'textarea':{
+                array_push($record,(string)$input);
+                break;
+            }
+            case 'range':{
+                array_push($record,$input['value']);
+                break;
+            }
+            case 'default':{
+                foreach ($input->value as $value){
+                    
+                    $vars[$value['val']]=(string)$value;
+                }
+                array_push($record,serialize($vars));
+            }
+            
+        }
+        insertintodb("inputs",$record,0);
+        //print_r($record);
+        //echo "<br/><br/><br/>::<br/>";
+    }

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<parentworkflow name="abhi" version="1" user="abhi">
+
+    <workflow name="abhi" version="1" user="abhishek">
+        <node id="1" type="start" name="Task1" time="50" >
+            <mustbedeactive>
+                <id>0</id>
+            </mustbedeactive>
+            <input type="hidden" name="try" preinitialize="true">
+                <value val="1"/>
+            </input>
+            <input type="text" name="text1" editable="true">
+                <value val="111"> </value>
+                <function>double</function>
+            </input>
+            <input type="persistent" name="No_of_tries" editable="true">
+                <value fval="1,try;"> </value>
+                <function>double</function>
+            </input>
+            <input type="checkbox" name="Gender">
+                <value val="male">male</value>
+                <value val="female">female</value>
+                <!-- inpust stored after processing-->
+                <function>display</function>
+                <function>display2</function>
+               
+            </input >
+            
+            <input type="checkbox" name="Gender">
+                <value val="male">male</value>
+                <value val="female">female</value>
+                <value fval="1,text1:abhi:1,Gender;func1:func2"> from func</value>
+                <value  table="organization" field="org_payment">
+                    <condition>id>;0</condition>
+                    <condition>id=;2</condition>
+                    <condition>id=;1,text1</condition>
+                    from database
+                  
+                </value>
+                <!-- inpust stored after processing-->
+                 
+                
+            </input>
+            <function execute="before">
+              
+                <data type="table" table="organization" field="org_payment">
+                    <condition>id>;0</condition>
+                    <condition>id=;2</condition>
+                   
+                  
+                </data>
+                <functionname>display2</functionname>
+            </function>
+            <!--
+            <function>
+                <data type="node">1,text1</data>
+                <data type="node">1,Gender</data>
+                <data type="table"  table="function" field="fine">
+                    <condition>org_id!=;0</condition>
+                    <condition>org_id=;'1'</condition>
+                    <condition>org_id=;female</condition>
+                </data>
+                <data>abhishek</data>
+                <functionname>display</functionname>
+                <functionname>display2</functionname>
+            </function>-->
+         
+            <outnode id="3"/>
+            <innodes id="0"/>
+        </node>
+        
+        <node id="3" type="ParallelSplit" name="Send_final_result" cost="100">
+         
+            <input type="text" name='megusta'> 
+                <value fval="1,text1:abhi:1,Gender;func1:func2"> </value> <!-- function name,nodeid,input name , function parameter -->
+            </input>
+            <innodes id="1"/>
+            
+            <function execute="before">
+              
+                <data type="node">1,text1</data>
+                <data type="node">1,Gender</data>
+                <data>abhishek</data>
+                <functionname>display</functionname>
+                <functionname>display2</functionname>
+                
+             
+            </function>
+            <outnode id="4" />
+        </node>
+        <node id="4" type="intermediate" cost="100" substitute="abhi">
+            <input type="text" name='megusta'> 
+                <value fval="3,megusta;none"> </value> <!-- function name,nodeid,input name , function parameter -->
+            </input>
+            <innodes id="3"/>
+            <outnodes id='2'/>
+        </node>
+        <node id="2" type="end" name="Task2">
+            <input type="hidden" name="text1">
+                <value fval="1,text1;"></value>
+               
+            </input>
+            <input type="hidden" name="Gender">
+                <value fval="1,Gender;"></value>
+            </input>
+            <innodes id="4"/>
+        </node>
+      
+    </workflow>
+    <garbage>
+        <node id="3" type="ParallelSplit" name="Send_final_result" cost="100">
+         
+            <input type="text" name='megusta'> 
+                <value fval="1,text1:abhi:1,Gender;func1:func2"> </value> <!-- function name,nodeid,input name , function parameter -->
+            </input>
+            <innodes id="1"/>
+            
+            <function execute="before">
+              
+                <data type="node">1,text1</data>
+                <data type="node">1,Gender</data>
+                <data>abhishek</data>
+                <functionname>display</functionname>
+                <functionname>display2</functionname>
+                
+             
+            </function>
+            <outnode id="2" />
+        </node>
+        <node id="2" type="end" name="Task2">
+            <input type="hidden" name="text1">
+                <value fval="1,text1;"></value>
+               
+            </input>
+            <input type="hidden" name="Gender">
+                <value fval="1,Gender;"></value>
+            </input>
+            <innodes id="3"/>
+        </node>
+    </garbage>
+
+</parentworkflow>
+
